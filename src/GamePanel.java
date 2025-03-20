@@ -15,7 +15,7 @@ public class GamePanel extends JPanel implements ActionListener {
         
         player = new Player(100, 400); // Initial position
         opponent = new Opponent(500, 400); // Initial position
-        background = new Background("res/images/background.png");
+        background = new Background("res/images/background/street.png");
         
         addKeyListener(new KeyboardInput(player));
         setFocusable(true);
@@ -47,7 +47,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
         
         // Check if opponent attacks back
-        if (opponent.getHealth() > 0 && opponent.isPunching() && opponent.getX() + 50 > player.getX() && opponent.getX() < player.getX() + 50) {
+        if (opponent.getHealth() > 0 && opponent.getX() + 50 > player.getX() && opponent.getX() < player.getX() + 50) {
             player.takeDamage(10); // Opponent deals 10 damage
         }
     }

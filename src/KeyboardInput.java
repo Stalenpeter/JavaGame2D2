@@ -18,13 +18,14 @@ public class KeyboardInput implements KeyListener {
             player.moveRight();
         } else if (key == KeyEvent.VK_A) { // A key for punch
             player.punch();
-        } else if (key == KeyEvent.VK_S) { // S key for kick
-            player.kick();
         }
     }
     
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        player.stopWalking();
+        player.stopPunching();
+    }
     
     @Override
     public void keyTyped(KeyEvent e) {}

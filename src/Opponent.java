@@ -1,19 +1,65 @@
 import java.awt.*;
 import javax.swing.ImageIcon;
+import java.awt.image.BufferedImage;
 
 public class Opponent {
     private int x, y;
     private int health = 100;
-    private Image opponentImage;
-
+    private Image[] idleFrames;
+    private Image[] hitFrames;
+    private Image currentImage;
+    private int currentFrame = 0;
+    private boolean isWalking = false;
+    
+    private int frameDelay = 5;  // Delay between frames (Control frame rate)
+    private long lastFrameTime = 0;  // Track the time for frame rate control
+    
+    // The new size for the sprite (width, height)
+    private int spriteWidth = 128; // Increased width for better view
+    private int spriteHeight = 128; // Increased height for better view
+    
     public Opponent(int x, int y) {
         this.x = x;
         this.y = y;
-        opponentImage = new ImageIcon("res/images/opponent.png").getImage();
+        loadImages();  // Load images for animations
+    }
+
+    private void loadImages() {
+        // Load frames for idle and hit animations (Bee's sprite sheets)
+        SpriteSheet idleSheet = new SpriteSheet("res/images/sprites/bee/idle/idle_state_bee_sheet.png", 64, 64);  // Bee's idle sprite sheet
+        idleFrames = idleSheet.getFrames();
+
+        SpriteSheet hitSheet = new SpriteSheet("res/images/sprites/bee/hit/hit_state_bee_sheet.png", 64, 64);  // Bee's hit sprite sheet
+        hitFrames = hitSheet.getFrames();
+
+        currentImage = idleFrames[0];  // Default to the first idle frame
     }
 
     public void update() {
-        // AI behavior: Move toward the player and attack
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastFrameTime >= frameDelay * 100) { // If enough time has passed, change the frame
+            if (isWalking) {
+                currentImage = idleFrames[currentFrame];
+                currentFrame = (currentFrame + 1) % idleFrames.length;
+            } else {
+                currentImage = idleFrames[0];  // Static idle frame
+            }
+            lastFrameTime = currentTime;  // Update the last frame time
+        }
+    }
+
+    public void moveLeft() {
+        x -= 3;
+        isWalking = true;
+    }
+
+    public void moveRight() {
+        x += 3;
+        isWalking = true;
+    }
+
+    public void stopWalking() {
+        isWalking = false;
     }
 
     public void takeDamage(int damage) {
@@ -21,19 +67,14 @@ public class Opponent {
     }
 
     public void draw(Graphics g) {
-        g.drawImage(opponentImage, x, y, 50, 50, null);
-        // Draw health bar
+        // Scale the image to a larger size
+        g.drawImage(currentImage, x, y, spriteWidth, spriteHeight, null); // Increased size for better view
         g.setColor(Color.RED);
-        g.fillRect(x, y - 10, health / 2, 5);
+        g.fillRect(x, y - 10, health / 2, 5); // Health bar
     }
 
     public int getHealth() {
         return health;
-    }
-
-    public boolean isPunching() {
-        // Placeholder: Implement punch behavior for AI
-        return false;
     }
 
     public int getX() {
